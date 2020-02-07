@@ -74,10 +74,10 @@ db.doc(`/users/${newUser.handle}`).get()
             return res.status(400).json({ handle: 'this handle is already taken'} );
         } else {
             return firebase
+                .auth()
+                .createUserWithEmailAndPassword(newUser.email, newUser.password)
         }
     })
-    .auth()
-    .createUserWithEmailAndPassword(newUser.email, newUser.password)
     .then(data => {
         return data.user.getIdToken();
     })
