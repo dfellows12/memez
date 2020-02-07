@@ -59,7 +59,8 @@ app.post('/meme', (req, resp) => {
     })
 })
 
-//Signup route
+//Signup route validate data
+let token, userId;
 app.post('/signup', (req, res) => {
 const newUser = {
     email: req.body.email,
@@ -68,9 +69,10 @@ const newUser = {
     handle: req.body.handle
 };
 
-db.doc(`/users/${newUser.handle}`).get()
+db.doc(`/users/${newUser.handle}`)
+    .get()
     .then(doc => {
-        if(doc.exist){
+        if(doc.exists){
             return res.status(400).json({ handle: 'this handle is already taken'} );
         } else {
             return firebase
@@ -79,9 +81,20 @@ db.doc(`/users/${newUser.handle}`).get()
         }
     })
     .then(data => {
+        userId= data.user.uid
         return data.user.getIdToken();
     })
-    .then(token => {
+    .then(idToken => {
+        token = idToken
+        const userCredentials = {
+            handle: newUser.handle,
+            email: newUser.email,
+            createdAt: new Date().toISOString(),
+            userId
+        };
+        return db.doc(`/users/${newUser.handle}`).set(userCredentials)
+    })
+    .then(() => {
         return res.status(201).json({ token });
     })
     .catch(err => {
@@ -91,7 +104,6 @@ db.doc(`/users/${newUser.handle}`).get()
         } else {
             return res.status(500).json({ error: err.code })
         }
-        return res.status(500).json({ error: err.code });
     })
 })
     
