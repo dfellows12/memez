@@ -2,7 +2,6 @@ const { db } = require('../util/admin')
 
 exports.getAllMemes = (req, resp) => {
     db
-    .firestore()
     .collection('memes')
     .orderBy('createdAt', 'desc')
     .get()
