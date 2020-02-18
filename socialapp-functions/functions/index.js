@@ -3,7 +3,7 @@ const app = require('express')()
 const FBAuth = require('./util/fbAuth')
 
 const { getAllMemes, postOneMeme } = require('./handlers/memes')
-const { signup, login, uploadImage } = require('./handlers/users')
+const { signup, login, uploadImage, addUserDetails } = require('./handlers/users')
 
 
 //Scream routes
@@ -14,6 +14,7 @@ app.post('/meme', FBAuth, postOneMeme)
 app.post('/signup', signup)
 app.post('/login', login)   
 app.post('/user/image', FBAuth, uploadImage)
+app.post('/user', FBAuth, addUserDetails)
 
 
 exports.api = functions.https.onRequest(app);
